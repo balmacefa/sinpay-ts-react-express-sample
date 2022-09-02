@@ -1,0 +1,25 @@
+{
+    "version": "0.2.0",
+    "configurations": [
+        {
+            "type": "node",
+            "request": "launch",
+            "name": "🚧 Debug SERVER 📃",
+            "runtimeExecutable": "npm",
+            "runtimeArgs": [
+                "run-script",
+                "debug"
+            ],
+            "skipFiles": [
+                "<node_internals>/**"
+            ],
+            "cwd": "${workspaceFolder}/server",
+            "outputCapture": "std",
+            "webRoot": "${workspaceFolder}/server/src",
+            "outFiles": [
+                "${workspaceFolder}/server/**/*.js",
+                "!**/node_modules/**"
+            ]
+        },
+    ]
+}

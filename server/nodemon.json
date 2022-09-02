@@ -1,0 +1,5 @@
+{
+    "verbose": true,
+    "ext": "ts",
+    "exec": "ts-node-dev src/index.ts"
+}
