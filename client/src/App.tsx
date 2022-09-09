@@ -1,9 +1,9 @@
 import { useEffect, useState } from 'react'
 import './App.css'
 import Layout from './components/Layout'
-import { IProduct, mockDB } from './components/MockDB'
 import LeftPanel from './components/Left'
 import MainPanel from './components/Main'
+import { IProduct, mockDB } from './components/MockDB'
 import RightPanel from './components/Right'
 import ProductCartDisplay from './products/ProductCartDisplay'
 

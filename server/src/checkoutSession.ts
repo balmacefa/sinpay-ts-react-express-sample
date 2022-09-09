@@ -61,6 +61,8 @@ export const createCheckoutSession = async (req: Request, _: Response) => {
             }
         );
         const { data } = response;
+        // todo: guardar ej de json de respuesta
+
         console.log("Sinpay response:", data);
     } catch (error) {
         console.log("Sinpay error:", error);

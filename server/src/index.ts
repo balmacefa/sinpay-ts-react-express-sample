@@ -36,11 +36,10 @@ app.post('/order_update_webhook/Iv0ct5w3KQ', orderUpdateWebhook);
 
 // ---------------------------------------------------------------
 // ---------------------------------------------------------------
-
-
 app.get('/', (_, res) => {
   res.redirect('/health');
 });
+
 
 app.listen(port, () => {
   console.log(`App started successfully on ${port}!`);
