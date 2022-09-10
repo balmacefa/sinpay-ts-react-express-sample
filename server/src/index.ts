@@ -43,6 +43,6 @@ app.get('/', (_, res) => {
 
 app.listen(port, () => {
   console.log(`App started successfully on ${port}!`);
-  console.log('Running', 'http://localhost:4242');
+  console.log('Running', 'http://localhost:' + port);
   console.log('Listening to orders updates', '/order_update_webhook/Iv0ct5w3KQ');
 });

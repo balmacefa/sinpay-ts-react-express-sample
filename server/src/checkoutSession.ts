@@ -3,7 +3,7 @@ import { IProduct } from './dataConfig';
 // axios
 import axios from 'axios';
 
-export const createCheckoutSession = async (req: Request, _: Response) => {
+export const createCheckoutSession = async (req: Request, res: Response) => {
 
     const { products, shipping } = req.body;
 
@@ -45,7 +45,7 @@ export const createCheckoutSession = async (req: Request, _: Response) => {
 
     payload.amount = getOrderTotalAmount(payload);
 
-    const token = `429317fa-bd81-4aee-a7d3-adc013d785c7`;
+    const token = process.env.SINPAY_API_KEY;
     const auth = `App API-Key ${token}`;
 
     try {
@@ -61,11 +61,12 @@ export const createCheckoutSession = async (req: Request, _: Response) => {
             }
         );
         const { data } = response;
-        // todo: guardar ej de json de respuesta
+        console.log(JSON.stringify(data, null, 2));
+        res.status(200).json(data);
 
-        console.log("Sinpay response:", data);
     } catch (error) {
         console.log("Sinpay error:", error);
+        return error;
     }
 
 

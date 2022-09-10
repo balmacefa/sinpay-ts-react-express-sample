@@ -1,7 +1,7 @@
-import { useState } from "react";
-import { IProduct } from "./MockDB";
-import PaymentGateway from "./PaymentGateway";
-
+import axios from 'axios'
+import { useState } from 'react'
+import { IProduct } from './MockDB'
+import PaymentGateway from './PaymentGateway'
 
 enum OrderState {
     INITIAL,
@@ -10,58 +10,53 @@ enum OrderState {
     CANCEL
 }
 
-export default function RightPanel(
-    {
-        cart
-    }: {
-        cart: IProduct[],
-    }
-) {
-    const [state, setState] = useState<OrderState>(OrderState.INITIAL);
-    const [responseOrder, setResponseOrder] = useState({});
+export default function RightPanel({ cart }: { cart: IProduct[] }) {
+    const [state, setState] = useState<OrderState>(OrderState.INITIAL)
+    const [responseOrder, setResponseOrder] = useState({})
 
     const shippingCode = {
         code: 'SH_01',
-        price: 5,
+        price: 5
     }
 
     const calculateSubtotal = () => {
-        var orderItemsTotal = 0;
-        orderItemsTotal = cart.reduce((acc: number, orderItem: IProduct) => acc + orderItem.price * (orderItem.amount || 1), orderItemsTotal);
-        return orderItemsTotal;
-    };
+        var orderItemsTotal = 0
+        orderItemsTotal = cart.reduce(
+            (acc: number, orderItem: IProduct) =>
+                acc + orderItem.price * (orderItem.amount || 1),
+            orderItemsTotal
+        )
+        return orderItemsTotal
+    }
 
     const calculateShipping = () => {
-        return shippingCode.price;
-    };
+        return shippingCode.price
+    }
 
     const calculateTotal = () => {
-        return calculateSubtotal() + calculateShipping();
-    };
+        return calculateSubtotal() + calculateShipping()
+    }
 
-    const requestNewCheckout = () => {
-        const payload = {
-            products: cart,
-            shipping: shippingCode,
-        };
-
+    const requestNewCheckout = async () => {
         // request new checkout
-        fetch('http://localhost:4242/create_checkout_session', {
-            method: 'POST',
-            headers: {
-                'Content-Type': 'application/json',
-            },
-            body: JSON.stringify(payload),
-        })
-            .then(res => res.json())
-            .then(res => {
-                setResponseOrder(res);
-                setState(OrderState.CHECKOUT);
-            }).catch(err => {
-                console.log(err);
+        try {
+            const payload = {
+                products: cart,
+                shipping: shippingCode
             }
-            );
-    };
+
+            console.log('requestNewCheckout', payload)
+            const response = await axios.post(
+                'http://localhost:4242/create_checkout_session',
+                payload
+            )
+            console.log('response', response)
+            setResponseOrder(response.data)
+            setState(OrderState.CHECKOUT)
+        } catch (error) {
+            console.log('error', error)
+        }
+    }
 
     return (
         <>
@@ -101,14 +96,12 @@ export default function RightPanel(
                     </p>
                 </div>
                 <button
-                    onClick={() => requestNewCheckout()}
+                    onClick={requestNewCheckout}
                     className="text-base leading-none w-full py-5 bg-gray-800 border-gray-800 border focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-gray-800 text-white dark:hover:bg-gray-700"
                 >
                     Checkout
                 </button>
             </div>
         </>
-    );
+    )
 }
-
-

@@ -3,11 +3,11 @@
     "version": "1.0.0",
     "description": "Starter app for a full-stack TypeScript application with auth",
     "scripts": {
-        "dev": "nodemon",
+        "dev": "nodemon -L",
         "start": "tsc && node dist/index.js",
         "lint": "eslint ./src/**/*.{ts,tsx}",
         "compile": "tsc --noEmit",
-        "debug": "yarn dev"
+        "debug": "pnpm dev"
     },
     "engines": {
         "node": "16.17.0",
