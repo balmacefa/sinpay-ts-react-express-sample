@@ -61,7 +61,7 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
     return (
         <>
             <div>
-                <p className="lg:text-4xl text-3xl font-black leading-9 text-slate-700 dark:text-white">
+                <p className="lg:text-4xl text-3xl font-black leading-9 text-slate-400 dark:text-white">
                     Summary
                 </p>
                 <div className="flex items-center justify-between pt-16">
@@ -81,12 +81,8 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
                     </p>
                 </div>
             </div>
-            <div className="bg-orange-300 rounded-sm ">
-                <div className="flex items-center justify-between">
-                    <PaymentGateway order={responseOrder} />
-                </div>
-            </div>
-            <div>
+
+            <div className="">
                 <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
                     <p className="text-2xl leading-normal text-slate-700 dark:text-white">
                         Total
@@ -102,6 +98,15 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
                     Checkout
                 </button>
             </div>
+
+            {/* Show only if OrderState.CHECKOUT */}
+            {state === OrderState.CHECKOUT && (
+                <div className="bg-orange-300 rounded-sm mt-8">
+                    <div className="flex items-center justify-between">
+                        <PaymentGateway order={responseOrder} />
+                    </div>
+                </div>
+            )}
         </>
     )
 }
