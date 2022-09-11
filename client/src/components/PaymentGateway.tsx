@@ -1,3 +1,7 @@
+import { ToastContainer, toast } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
+
+
 // https://github.com/ushelp/EasyQRCodeJS#react-support
 
 const formatDivider = (
@@ -34,6 +38,7 @@ const formatDivider = (
 export default function PaymentGateway({ order }: { order: any }) {
     return (
         <main className="flex w-full h-full rounded">
+            <ToastContainer />
             <div className="flex flex-col w-full bg-sky-700 px-3 py-6 rounded">
                 <div className="flex flex-col items-center h-full">
                     {/* show label text "Número" white text */}

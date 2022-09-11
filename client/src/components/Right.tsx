@@ -1,5 +1,7 @@
 import axios from 'axios'
 import { useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
+import 'react-toastify/dist/ReactToastify.css'
 import { IProduct } from './MockDB'
 import PaymentGateway from './PaymentGateway'
 
@@ -46,20 +48,26 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
             }
 
             console.log('requestNewCheckout', payload)
+            toast('requestNewCheckout')
             const response = await axios.post(
                 'http://localhost:4242/create_checkout_session',
                 payload
             )
             console.log('response', response)
+            toast('Order created successfully!')
             setResponseOrder(response.data?.doc)
             setState(OrderState.CHECKOUT)
-        } catch (error) {
+        } catch (error: any) {
             console.log('error', error)
+            toast.error('Error 😲🥶')
+            toast.error(error?.message)
         }
     }
 
     return (
         <>
+            <ToastContainer />
+
             <div>
                 <p className="lg:text-4xl text-3xl font-black leading-9 text-slate-400 dark:text-white">
                     Summary
