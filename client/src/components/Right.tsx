@@ -51,7 +51,7 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
                 payload
             )
             console.log('response', response)
-            setResponseOrder(response.data)
+            setResponseOrder(response.data?.doc)
             setState(OrderState.CHECKOUT)
         } catch (error) {
             console.log('error', error)

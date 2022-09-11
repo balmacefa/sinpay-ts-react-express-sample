@@ -4,6 +4,7 @@ import { IProduct } from './dataConfig';
 import axios from 'axios';
 
 export const createCheckoutSession = async (req: Request, res: Response) => {
+    console.log('createCheckoutSession');
 
     const { products, shipping } = req.body;
 
@@ -49,6 +50,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     const auth = `App API-Key ${token}`;
 
     try {
+        console.log('Send order to sinpay', payload);
 
         const response = await axios.post(
             'http://localhost:3033/api/v1/orders',
@@ -61,11 +63,12 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
             }
         );
         const { data } = response;
+        console.log('Sinpay response');
         console.log(JSON.stringify(data, null, 2));
         res.status(200).json(data);
 
     } catch (error) {
-        console.log("Sinpay error:", error);
+        console.error("Sinpay error:", error);
         return error;
     }
 
