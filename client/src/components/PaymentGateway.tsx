@@ -1,11 +1,10 @@
-import { ToastContainer, toast } from 'react-toastify'
+import { ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
-
 
 // https://github.com/ushelp/EasyQRCodeJS#react-support
 
 const formatDivider = (
-    amount: number,
+    amount: string,
     prefix = 'CRC ',
     spanClass = 'ml-1 text-gray-500',
     divider = 3
@@ -14,7 +13,6 @@ const formatDivider = (
     if (!amount) return
     // remove spaces and -, , . from amount
     const amountStr = amount
-        .toString()
         .replace(/\s/g, '')
         .replace(/-/g, '')
         .replace(/,/g, '')
@@ -35,7 +33,30 @@ const formatDivider = (
     )
 }
 
-export default function PaymentGateway({ order }: { order: any }) {
+// response samples order.
+// "display": {
+//   "id": "631e64d8220cc442bae26225",
+//   "tracking_code": "EGPY3742",
+//   "sinpe_number": "70640928",
+//   "sinpe_account_name": "Cafeë Los Santos",
+//   "price_crc": "undefined",
+//   "description": "EGPY3742",
+//   "status": "undefined",
+//   "sinpay_qr_img_url": "undefined",
+//   "sinpay_redirect_url": "undefined"
+// }
+export default function PaymentGateway({
+    order: {
+        display: {
+            sinpe_number: numeroSinpe,
+            sinpe_account_name: nombreCuentaSinpe,
+            price_crc: montoSinpe,
+            description
+        }
+    }
+}: {
+    order: any
+}) {
     return (
         <main className="flex w-full h-full rounded">
             <ToastContainer />
@@ -45,7 +66,7 @@ export default function PaymentGateway({ order }: { order: any }) {
                     <div className="flex flex-col w-full max-w-xs space-y-6">
                         <div className="!mt-0 text-center">
                             <h2 className="font-mono text-2xl text-white mb-4">
-                                {order.seller_name || 'Cafetería Los Santos'}
+                                {nombreCuentaSinpe || 'Cafetería Los Santos'}
                             </h2>
                             <h1 className="text-white text-xl normal-case">
                                 Detalle del pago
@@ -62,7 +83,7 @@ export default function PaymentGateway({ order }: { order: any }) {
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        order.number,
+                                        numeroSinpe,
                                         '',
                                         'ml-1 text-gray-500',
                                         4
@@ -76,7 +97,7 @@ export default function PaymentGateway({ order }: { order: any }) {
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        order?.amount,
+                                        montoSinpe,
                                         '',
                                         'ml-1 text-gray-500'
                                     )}
@@ -89,7 +110,7 @@ export default function PaymentGateway({ order }: { order: any }) {
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        order?.otp,
+                                        description,
                                         '',
                                         'ml-1 text-pink-500',
                                         4
