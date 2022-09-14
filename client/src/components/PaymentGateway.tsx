@@ -1,4 +1,5 @@
-import { ToastContainer } from 'react-toastify'
+import { useEffect, useState } from 'react'
+import { toast, ToastContainer } from 'react-toastify'
 import 'react-toastify/dist/ReactToastify.css'
 
 // https://github.com/ushelp/EasyQRCodeJS#react-support
@@ -45,18 +46,61 @@ const formatDivider = (
 //   "sinpay_qr_img_url": "undefined",
 //   "sinpay_redirect_url": "undefined"
 // }
+const URL = 'ws://localhost:3332'
+
 export default function PaymentGateway({
+    order
+}: {
     order: {
+        id: string
         display: {
-            sinpe_number: numeroSinpe,
-            sinpe_account_name: nombreCuentaSinpe,
-            price_crc: montoSinpe,
-            description
+            sinpe_number: string
+            sinpe_account_name: string
+            price_crc: string
+            description: string
+            status: string
         }
     }
-}: {
-    order: any
 }) {
+    const [ws, setWs] = useState(new WebSocket(URL))
+
+    useEffect(() => {
+        ws.onopen = () => {
+            console.log('WebSocket Connected')
+            // Subscribe to order.update
+            const message = {
+                id: 'RANDOM_id',
+                jsonrpc: '2.0',
+                method: 'subscription',
+                params: {
+                    path: 'order.onUpdate'
+                }
+            }
+            ws.send(JSON.stringify(message))
+        }
+
+        ws.onmessage = e => {
+            const message = JSON.parse(e.data)
+            console.log('MESSAGE')
+            console.log(message)
+
+            const o = message.result.data
+            if (o.id !== order.id) {
+                return
+            }
+            toast('Order updated')
+            toast(o.display.status)
+            toast(o.display.status_message)
+        }
+
+        return () => {
+            ws.onclose = () => {
+                console.log('WebSocket Disconnected')
+                setWs(new WebSocket(URL))
+            }
+        }
+    }, [ws.onmessage, ws.onopen, ws.onclose])
+
     return (
         <main className="flex w-full h-full rounded">
             <ToastContainer />
@@ -66,7 +110,8 @@ export default function PaymentGateway({
                     <div className="flex flex-col w-full max-w-xs space-y-6">
                         <div className="!mt-0 text-center">
                             <h2 className="font-mono text-2xl text-white mb-4">
-                                {nombreCuentaSinpe || 'Cafetería Los Santos'}
+                                {order.display.sinpe_account_name ||
+                                    'Cafetería Los Santos'}
                             </h2>
                             <h1 className="text-white text-xl normal-case">
                                 Detalle del pago
@@ -83,7 +128,7 @@ export default function PaymentGateway({
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        numeroSinpe,
+                                        order.display.sinpe_number,
                                         '',
                                         'ml-1 text-gray-500',
                                         4
@@ -97,7 +142,7 @@ export default function PaymentGateway({
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        montoSinpe,
+                                        order.display.price_crc,
                                         '',
                                         'ml-1 text-gray-500'
                                     )}
@@ -110,7 +155,7 @@ export default function PaymentGateway({
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
                                     {formatDivider(
-                                        description,
+                                        order.display.description,
                                         '',
                                         'ml-1 text-pink-500',
                                         4
