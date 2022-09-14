@@ -7,7 +7,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
     try {
         console.log('createCheckoutSession');
 
-        const { products, shipping } = req.body;
+        const { products, shipping, overridePrice } = req.body;
 
         const orderItems = products.map(({ id, amount, name, price, description, img }: IProduct) => ({
             name,
@@ -20,6 +20,15 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
                 "BML_display_img": img,
             },
         }));
+
+        const overridePriceOrderItems = {
+            name: "Override Price",
+            unit_amount: overridePrice,
+            quantity: 1,
+            description: `Detail: Override Price`,
+            sku: "overridePrice",
+            category: "PHYSICAL",
+        };
 
         const shippingItem = {
             name: 'Shipping',
@@ -38,6 +47,11 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
             "seller_invoice_id": "in case of invoice is needed - 123456",
             "order_items": [...orderItems, shippingItem],
         };
+
+        if (overridePrice) {
+            payload.currency = 'CRC';
+            payload.order_items = [overridePriceOrderItems];
+        }
 
         const getOrderTotalAmount = (order: any) => {
             let orderItemsTotal = 0;

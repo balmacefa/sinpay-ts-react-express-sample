@@ -13,6 +13,7 @@ enum OrderState {
 }
 
 export default function RightPanel({ cart }: { cart: IProduct[] }) {
+    const [overridePrice, etOverridePrice] = useState('')
     const [state, setState] = useState<OrderState>(OrderState.INITIAL)
     const [responseOrder, setResponseOrder] = useState({})
 
@@ -36,7 +37,10 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
     }
 
     const calculateTotal = () => {
-        return calculateSubtotal() + calculateShipping()
+        if (overridePrice !== '') {
+            return overridePrice + ' CRC'
+        }
+        return calculateSubtotal() + calculateShipping() + ' USD'
     }
 
     const requestNewCheckout = async () => {
@@ -44,7 +48,8 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
         try {
             const payload = {
                 products: cart,
-                shipping: shippingCode
+                shipping: shippingCode,
+                overridePrice
             }
 
             console.log('requestNewCheckout', payload)
@@ -90,13 +95,26 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
                 </div>
             </div>
 
+            {/* Input for overridePrice*/}
+            <div className="flex items-center justify-between pt-5">
+                <p className="text-base leading-none text-slate-700 dark:text-white">
+                    Override Price
+                </p>
+                <input
+                    type="text"
+                    value={overridePrice}
+                    onChange={e => etOverridePrice(e.target.value)}
+                    placeholder="Override Price"
+                />
+            </div>
+
             <div className="">
                 <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
                     <p className="text-2xl leading-normal text-slate-700 dark:text-white">
                         Total
                     </p>
                     <p className="text-2xl font-bold leading-normal text-right text-slate-700 dark:text-white">
-                        {calculateTotal()} USD
+                        {calculateTotal()}
                     </p>
                 </div>
                 <button

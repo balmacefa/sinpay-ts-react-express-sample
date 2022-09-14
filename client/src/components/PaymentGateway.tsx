@@ -62,6 +62,7 @@ export default function PaymentGateway({
         }
     }
 }) {
+    const [status, setStatus] = useState(order.display.status)
     const [ws, setWs] = useState(new WebSocket(URL))
 
     useEffect(() => {
@@ -88,6 +89,7 @@ export default function PaymentGateway({
             if (o.id !== order.id) {
                 return
             }
+            setStatus(o.display.status)
             toast('Order updated')
             toast(o.display.status)
             toast(o.display.status_message)
@@ -101,10 +103,36 @@ export default function PaymentGateway({
         }
     }, [ws.onmessage, ws.onopen, ws.onclose])
 
+    const OrderStatus = {
+        PENDING_PAYMENT: 'PENDING_PAYMENT',
+        COMPLETED: 'COMPLETED',
+        COMPLETED_BY_SELLER: 'COMPLETED_BY_SELLER',
+        AVOIDED_BY_PAYER: 'AVOIDED_BY_PAYER',
+        CANCELED_BY_SELLER: 'CANCELED_BY_SELLER',
+        INCOMPLETE_PAYMENT: 'INCOMPLETE_PAYMENT',
+        OVERPAID: 'OVERPAID',
+        EXPIRED: 'EXPIRED'
+    }
+
+    const backgroundColor = () => {
+        switch (status) {
+            case OrderStatus.COMPLETED:
+                return 'bg-green-600'
+            case OrderStatus.OVERPAID:
+                return 'bg-orange-600'
+            case OrderStatus.INCOMPLETE_PAYMENT:
+                return 'bg-red-800'
+            default:
+                return 'bg-sky-700'
+        }
+    }
+
     return (
         <main className="flex w-full h-full rounded">
             <ToastContainer />
-            <div className="flex flex-col w-full bg-sky-700 px-3 py-6 rounded">
+            <div
+                className={`flex flex-col w-full ${backgroundColor()} px-3 py-6 rounded`}
+            >
                 <div className="flex flex-col items-center h-full">
                     {/* show label text "Número" white text */}
                     <div className="flex flex-col w-full max-w-xs space-y-6">
