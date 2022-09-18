@@ -60,24 +60,22 @@ export default function PaymentGateway({
             description: string
             status: string
         }
+        websocket: {
+            url: string
+            message: any
+        }
     }
 }) {
+    const wsUrl = order.websocket.url
+
     const [status, setStatus] = useState(order.display.status)
-    const [ws, setWs] = useState(new WebSocket(URL))
+    const [ws, setWs] = useState(new WebSocket(wsUrl))
 
     useEffect(() => {
         ws.onopen = () => {
             console.log('WebSocket Connected')
             // Subscribe to order.update
-            const message = {
-                id: 'RANDOM_id',
-                jsonrpc: '2.0',
-                method: 'subscription',
-                params: {
-                    path: 'order.onUpdate'
-                }
-            }
-            ws.send(JSON.stringify(message))
+            ws.send(JSON.stringify(order.websocket.message))
         }
 
         ws.onmessage = e => {
