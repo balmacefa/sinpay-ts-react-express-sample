@@ -4,50 +4,6 @@ import 'react-toastify/dist/ReactToastify.css'
 
 // https://github.com/ushelp/EasyQRCodeJS#react-support
 
-const formatDivider = (
-    amount: string,
-    prefix = 'CRC ',
-    spanClass = 'ml-1 text-gray-500',
-    divider = 3
-) => {
-    // if amount is null or amount is undefined or amount is 0 then return
-    if (!amount) return
-    // remove spaces and -, , . from amount
-    const amountStr = amount
-        .replace(/\s/g, '')
-        .replace(/-/g, '')
-        .replace(/,/g, '')
-        .replace(/\./g, '')
-    if (amountStr.length <= divider) {
-        return `${prefix}${amountStr}`
-    }
-    //substring of the last divider digits
-    const last = amountStr.substring(amountStr.length - divider)
-    // the rest of the string
-    const rest = amountStr.substring(0, amountStr.length - divider)
-    return (
-        <>
-            {prefix}
-            {rest}
-            <span className={spanClass}>{last}</span>
-        </>
-    )
-}
-
-// response samples order.
-// "display": {
-//   "id": "631e64d8220cc442bae26225",
-//   "tracking_code": "EGPY3742",
-//   "sinpe_number": "70640928",
-//   "sinpe_account_name": "Cafeë Los Santos",
-//   "price_crc": "undefined",
-//   "description": "EGPY3742",
-//   "status": "undefined",
-//   "sinpay_qr_img_url": "undefined",
-//   "sinpay_redirect_url": "undefined"
-// }
-const URL = 'ws://localhost:3332'
-
 export default function PaymentGateway({
     order
 }: {
@@ -69,22 +25,33 @@ export default function PaymentGateway({
     const wsUrl = order.websocket.url
 
     const [status, setStatus] = useState(order.display.status)
-    const [ws, setWs] = useState(new WebSocket(wsUrl))
+
+    const [ws, setWs] = useState<WebSocket | null>()
 
     useEffect(() => {
-        ws.onopen = () => {
-            console.log('WebSocket Connected')
-            // Subscribe to order.update
-            ws.send(JSON.stringify(order.websocket.message))
+        startWebsocket()
+    }, [])
+
+    function startWebsocket() {
+        var wss = new WebSocket(wsUrl)
+
+        wss.onclose = function () {
+            // connection closed, discard old websocket and create a new one in 5s
+            setTimeout(startWebsocket, 5000)
         }
 
-        ws.onmessage = e => {
-            const message = JSON.parse(e.data)
-            console.log('MESSAGE')
-            console.log(message)
+        wss.onopen = () => {
+            console.log('WebSocket Connected')
+            // Subscribe to order.update
+            wss.send(JSON.stringify(order.websocket.message))
+        }
 
-            const o = message.result.data
-            if (o.id !== order.id) {
+        wss.onmessage = e => {
+            const message = JSON.parse(e.data)
+            console.log('MESSAGE', message)
+
+            const o = message?.result?.data
+            if (o?.id !== order.id) {
                 return
             }
             setStatus(o.display.status)
@@ -93,13 +60,9 @@ export default function PaymentGateway({
             toast(o.display.status_message)
         }
 
-        return () => {
-            ws.onclose = () => {
-                console.log('WebSocket Disconnected')
-                setWs(new WebSocket(URL))
-            }
-        }
-    }, [ws.onmessage, ws.onopen, ws.onclose])
+        setWs(wss)
+    }
+    // startWebsocket()
 
     const OrderStatus = {
         PENDING_PAYMENT: 'PENDING_PAYMENT',
@@ -227,5 +190,35 @@ export default function PaymentGateway({
                 </div>
             </div>
         </main>
+    )
+}
+
+const formatDivider = (
+    amount: string,
+    prefix = 'CRC ',
+    spanClass = 'ml-1 text-gray-500',
+    divider = 3
+) => {
+    // if amount is null or amount is undefined or amount is 0 then return
+    if (!amount) return
+    // remove spaces and -, , . from amount
+    const amountStr = amount
+        .replace(/\s/g, '')
+        .replace(/-/g, '')
+        .replace(/,/g, '')
+        .replace(/\./g, '')
+    if (amountStr.length <= divider) {
+        return `${prefix}${amountStr}`
+    }
+    //substring of the last divider digits
+    const last = amountStr.substring(amountStr.length - divider)
+    // the rest of the string
+    const rest = amountStr.substring(0, amountStr.length - divider)
+    return (
+        <>
+            {prefix}
+            {rest}
+            <span className={spanClass}>{last}</span>
+        </>
     )
 }
