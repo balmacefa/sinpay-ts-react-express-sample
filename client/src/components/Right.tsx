@@ -71,7 +71,7 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
 
     return (
         <>
-            <ToastContainer />
+            <ToastContainer position="top-left" />
 
             <div>
                 <p className="lg:text-4xl text-3xl font-black leading-9 text-slate-400 dark:text-white">

@@ -40,7 +40,7 @@ export default function PaymentGateway({
             setTimeout(startWebsocket, 5000)
         }
 
-        wss.onopen = () => {
+        wss.onopen = e => {
             console.log('WebSocket Connected')
             // Subscribe to order.update
             wss.send(JSON.stringify(order.websocket.message))
@@ -49,10 +49,17 @@ export default function PaymentGateway({
         wss.onmessage = e => {
             const message = JSON.parse(e.data)
             console.log('MESSAGE', message)
+            // result: type: 'started'
+
+            const isInit = message?.result?.type === 'started'
+
+            if (isInit) {
+            }
 
             const o = message?.result?.data
             if (o?.id !== order.id) {
-                return
+                // CHeck this
+                // return
             }
             setStatus(o.display.status)
             toast('Order updated')
@@ -90,7 +97,7 @@ export default function PaymentGateway({
 
     return (
         <main className="flex w-full h-full rounded">
-            <ToastContainer />
+            <ToastContainer position="top-center" />
             <div
                 className={`flex flex-col w-full ${backgroundColor()} px-3 py-6 rounded`}
             >
@@ -143,11 +150,12 @@ export default function PaymentGateway({
                             <h1 className="text-white  mb-2">Descripción</h1>
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
+                                    {/* TODO: Change this magic number 3 - to match the lengt of otp/2 ? or better for strategy */}
                                     {formatDivider(
                                         order.display.description,
                                         '',
                                         'ml-1 text-pink-500',
-                                        4
+                                        3
                                     )}
                                 </h1>
                             </div>
@@ -197,7 +205,7 @@ const formatDivider = (
     amount: string,
     prefix = 'CRC ',
     spanClass = 'ml-1 text-gray-500',
-    divider = 3
+    divider = 2
 ) => {
     // if amount is null or amount is undefined or amount is 0 then return
     if (!amount) return
