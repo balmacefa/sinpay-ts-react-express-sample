@@ -22,7 +22,7 @@
         "web-vitals": "^2.1.4"
     },
     "scripts": {
-        "dev": "pnpm run start",
+        "dev": "pnpm run start --host",
         "start": "vite",
         "build": "tsc && vite build",
         "serve": "vite preview"

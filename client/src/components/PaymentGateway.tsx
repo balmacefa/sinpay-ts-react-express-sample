@@ -61,10 +61,13 @@ export default function PaymentGateway({
                 // CHeck this
                 // return
             }
-            setStatus(o.display.status)
-            toast('Order updated')
-            toast(o.display.status)
-            toast(o.display.status_message)
+            // todo:: debugger
+            if (o?.display?.status) toast(o.display.status)
+            if (
+                o?.display?.status_message &&
+                o.display.status_message !== 'undefined'
+            )
+                toast(o?.display?.status_message)
         }
 
         setWs(wss)
@@ -137,10 +140,13 @@ export default function PaymentGateway({
                             <h1 className="text-white  mb-2">Monto</h1>
                             <div className="bg-gray-100 hover:bg-gray-300 hover:cursor-pointer shadow-md px-1 py-2 text-center font-mono font-bold text-gray-600 rounded-sm relative">
                                 <h1 className="text-2xl">
+                                    {/* TODO: remove magic number */}
                                     {formatDivider(
                                         order.display.price_crc,
                                         '',
-                                        'ml-1 text-gray-500'
+                                        'ml-1 text-gray-500',
+                                        3,
+                                        'CRC'
                                     )}
                                 </h1>
                             </div>
@@ -203,9 +209,10 @@ export default function PaymentGateway({
 
 const formatDivider = (
     amount: string,
-    prefix = 'CRC ',
+    prefix = '₡ ',
     spanClass = 'ml-1 text-gray-500',
-    divider = 2
+    divider = 2,
+    suffix = ''
 ) => {
     // if amount is null or amount is undefined or amount is 0 then return
     if (!amount) return
@@ -227,6 +234,7 @@ const formatDivider = (
             {prefix}
             {rest}
             <span className={spanClass}>{last}</span>
+            {` ${suffix}`}
         </>
     )
 }

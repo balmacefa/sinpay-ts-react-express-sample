@@ -55,7 +55,8 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
             console.log('requestNewCheckout', payload)
             toast('requestNewCheckout')
             const response = await axios.post(
-                'http://localhost:4242/create_checkout_session',
+                // 'http://127.0.0.1:4242/create_checkout_session',
+                'https://cur-4242-bml-sinpay.loca.lt/create_checkout_session',
                 payload
             )
             console.log('response', response)
