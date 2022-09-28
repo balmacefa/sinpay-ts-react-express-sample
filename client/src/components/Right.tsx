@@ -14,8 +14,10 @@ enum OrderState {
 
 export default function RightPanel({ cart }: { cart: IProduct[] }) {
     const [overridePrice, etOverridePrice] = useState('')
+    // redirect
+    const [redirect, setRedirect] = useState(true)
     const [state, setState] = useState<OrderState>(OrderState.INITIAL)
-    const [responseOrder, setResponseOrder] = useState({})
+    const [responseOrder, setResponseOrder] = useState(null)
 
     const shippingCode = {
         code: 'SH_01',
@@ -54,13 +56,21 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
 
             console.log('requestNewCheckout', payload)
             toast('requestNewCheckout')
+            const ServerHost = import.meta.env.VITE_REACT_STORE_BACK_END
+
             const response = await axios.post(
-                'http://127.0.0.1:4242/create_checkout_session',
-                // 'https://cur-4242-bml-sinpay.loca.lt/create_checkout_session',
+                `${ServerHost}/create_checkout_session`,
                 payload
             )
             console.log('response', response)
             toast('Order created successfully!')
+
+            if (redirect) {
+                const url = response.data?.doc?.display?.sinpay_redirect_url
+                debugger
+                window.location.href = url
+            }
+
             setResponseOrder(response.data?.doc)
             setState(OrderState.CHECKOUT)
         } catch (error: any) {
@@ -108,6 +118,19 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
                     placeholder="Override Price"
                 />
             </div>
+            <div className="flex items-center justify-between pt-5">
+                <label htmlFor="checkbox">
+                    <p className="text-base leading-none text-slate-700 dark:text-white">
+                        Redirect Order
+                    </p>
+                </label>
+                <input
+                    id="checkbox"
+                    type="checkbox"
+                    checked={redirect}
+                    onChange={() => setRedirect(!redirect)}
+                />
+            </div>
 
             <div className="">
                 <div className="flex items-center pb-6 justify-between lg:pt-5 pt-20">
@@ -127,7 +150,7 @@ export default function RightPanel({ cart }: { cart: IProduct[] }) {
             </div>
 
             {/* Show only if OrderState.CHECKOUT */}
-            {state === OrderState.CHECKOUT && (
+            {state === OrderState.CHECKOUT && responseOrder !== null && (
                 <div className="bg-orange-300 rounded-sm mt-8">
                     <div className="flex items-center justify-between">
                         <PaymentGateway order={responseOrder} />

@@ -67,7 +67,7 @@ export const createCheckoutSession = async (req: Request, res: Response) => {
         console.log('Send order to sinpay', payload);
 
         const response = await axios.post(
-            'http://localhost:3033/api/v1/orders',
+            `${process.env.PAYLOAD_API_HOST}/api/v1/orders`,
             JSON.stringify(payload),
             {
                 headers: {

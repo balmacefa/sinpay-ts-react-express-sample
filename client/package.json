@@ -13,6 +13,7 @@
         "@types/react-dom": "^18.0.6",
         "@vitejs/plugin-react": "^2.1.0",
         "axios": "^0.27.2",
+        "env-cmd": "^10.1.0",
         "react": "^18.2.0",
         "react-dom": "^18.2.0",
         "react-toastify": "^9.0.8",
@@ -22,7 +23,7 @@
         "web-vitals": "^2.1.4"
     },
     "scripts": {
-        "dev": "pnpm run start --host",
+        "dev": "env-cmd -e dev, pnpm run start --host",
         "start": "vite",
         "build": "tsc && vite build",
         "serve": "vite preview"

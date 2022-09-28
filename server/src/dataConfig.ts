@@ -44,9 +44,5 @@ const mockDB = {
 };
 
 
-const sinpayOptions = {
-    newOrderEndpoint: 'http://localhost:3033',
-    APIKey: 'zQv1eC+ITviCh21MhJKWK1paLYJW5tZtXbLapXevSsk='
-};
+export { mockDB };
 
-export { mockDB, sinpayOptions };
